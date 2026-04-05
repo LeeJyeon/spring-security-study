@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.RememberMeServices
 
 /**
  * ===== Step 2 & 4: Spring Security 설정 =====
@@ -24,11 +25,11 @@ import org.springframework.security.web.SecurityFilterChain
  */
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(private val rememberMeServices: RememberMeServices) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http
+        http.rememberMe { rememberMe -> rememberMe.rememberMeServices(rememberMeServices) }
             // ===== URL별 접근 권한 설정 =====
             .authorizeHttpRequests { auth ->
                 auth
