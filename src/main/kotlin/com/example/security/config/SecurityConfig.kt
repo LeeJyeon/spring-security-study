@@ -23,7 +23,10 @@ import org.springframework.security.web.authentication.RememberMeServices
  */
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(private val rememberMeServices: RememberMeServices, private val authenticationHandler: AuthenticationHandler) {
+class SecurityConfig(
+    private val rememberMeServices: RememberMeServices, private val authenticationHandler: AuthenticationHandler,
+    private val accessDeniedHandler: AccessDeniedHandler
+) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -39,6 +42,7 @@ class SecurityConfig(private val rememberMeServices: RememberMeServices, private
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     // 그 외 모든 요청은 인증 필요
                     .anyRequest().authenticated()
+
             }
             // ===== 폼 로그인 설정 =====
             .formLogin { form ->
@@ -63,6 +67,9 @@ class SecurityConfig(private val rememberMeServices: RememberMeServices, private
             }
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
+            }
+            .exceptionHandling { ex ->
+                ex.accessDeniedHandler(accessDeniedHandler)
             }
 
         return http.build()

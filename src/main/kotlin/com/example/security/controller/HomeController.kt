@@ -38,4 +38,9 @@ class HomeController {
         model.addAttribute("username", principal.name)
         return "admin"
     }
+
+    @GetMapping("/access-denied")
+    fun accessDenied(): String {
+        return "access-denied"
+    }
 }
