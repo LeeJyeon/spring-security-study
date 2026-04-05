@@ -45,4 +45,18 @@ class UserService(
     fun findByUsername(username: String): User? {
         return userRepository.findByUsername(username)
     }
+
+    @Transactional
+    fun successLogin(username: String) {
+        val user = userRepository.findByUsername(username) ?: return
+        user.resetLoginAttempts()
+        userRepository.save(user)
+    }
+
+    @Transactional
+    fun failLogin(username: String) {
+        val user = userRepository.findByUsername(username) ?: return
+        user.failLogin()
+        userRepository.save(user)
+    }
 }

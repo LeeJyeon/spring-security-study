@@ -29,9 +29,25 @@ class User(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val role: Role = Role.USER
-)
+    val role: Role = Role.USER,
 
+) {
+    @Column(nullable = true)
+    var failLoginAttempts: Int = 0
+        private set
+
+    fun failLogin() {
+        if (failLoginAttempts < 5) {
+            failLoginAttempts++
+        }
+    }
+
+    fun resetLoginAttempts() {
+        failLoginAttempts = 0
+    }
+
+    fun isLocked(): Boolean = failLoginAttempts >= 5
+}
 /**
  * 사용자 역할 Enum
  *

@@ -4,8 +4,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.RememberMeServices
 
@@ -25,7 +23,7 @@ import org.springframework.security.web.authentication.RememberMeServices
  */
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(private val rememberMeServices: RememberMeServices) {
+class SecurityConfig(private val rememberMeServices: RememberMeServices, private val authenticationHandler: AuthenticationHandler) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
@@ -34,7 +32,7 @@ class SecurityConfig(private val rememberMeServices: RememberMeServices) {
             .authorizeHttpRequests { auth ->
                 auth
                     // 누구나 접근 가능한 페이지
-                    .requestMatchers("/", "/signup", "/css/**", "/js/**").permitAll()
+                    .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**").permitAll()
                     // H2 콘솔 접근 허용 (개발용)
                     .requestMatchers("/h2-console/**").permitAll()
                     // /admin/** 경로는 ADMIN 역할만 접근 가능
@@ -47,8 +45,8 @@ class SecurityConfig(private val rememberMeServices: RememberMeServices) {
                 form
                     .loginPage("/login")              // 커스텀 로그인 페이지 경로
                     .loginProcessingUrl("/login")      // 로그인 폼 action URL
-                    .defaultSuccessUrl("/", true)      // 로그인 성공 시 이동할 페이지
-                    .failureUrl("/login?error")        // 로그인 실패 시 이동할 페이지
+                    .successHandler(authenticationHandler)
+                    .failureHandler(authenticationHandler)
                     .permitAll()                       // 로그인 페이지는 누구나 접근 가능
             }
             // ===== 로그아웃 설정 =====
@@ -70,15 +68,4 @@ class SecurityConfig(private val rememberMeServices: RememberMeServices) {
         return http.build()
     }
 
-    /**
-     * PasswordEncoder Bean 등록
-     *
-     * BCrypt: 단방향 해시 함수 + Salt 자동 생성
-     * - 같은 비밀번호도 매번 다른 해시값 생성
-     * - Rainbow Table 공격 방어
-     */
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
 }

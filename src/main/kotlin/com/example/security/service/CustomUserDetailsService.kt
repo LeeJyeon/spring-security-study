@@ -33,6 +33,10 @@ class CustomUserDetailsService(
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("사용자를 찾을 수 없습니다: $username")
 
+        if(user.isLocked()){
+            throw IllegalStateException("비밀번호 5회 이상 실패로, 계정이 잠겼습니다: $username")
+        }
+
         return org.springframework.security.core.userdetails.User.builder()
             .username(user.username)
             .password(user.password)
