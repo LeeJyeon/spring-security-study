@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>관리자 페이지</h1>
+
+    <div class="card">
+        <p><strong>관리자:</strong> <span th:text="${username}">admin</span></p>
+    </div>
+
+    <div class="info-box">
+        <h3>이 페이지가 보이는 이유</h3>
+        <p>
+            SecurityConfig에서 <code>.requestMatchers("/admin/**").hasRole("ADMIN")</code>
+            설정으로 ADMIN 역할을 가진 사용자만 접근할 수 있습니다.
+        </p>
+        <p>
+            일반 사용자(user)로 로그인 후 <code>/admin</code>에 접근하면
+            <strong>403 Forbidden</strong> 에러가 발생합니다. 직접 확인해보세요!
+        </p>
+    </div>
+
+    <div class="nav">
+        <a href="/" class="btn">홈으로</a>
+    </div>
+</div>
+</body>
+</html>

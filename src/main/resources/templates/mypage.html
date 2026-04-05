@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>마이페이지</h1>
+
+    <div class="card">
+        <p><strong>사용자:</strong> <span th:text="${username}">username</span></p>
+        <p><strong>권한:</strong> <span sec:authentication="authorities">ROLE</span></p>
+    </div>
+
+    <div class="info-box">
+        <h3>이 페이지가 보이는 이유</h3>
+        <p>
+            SecurityConfig에서 <code>.anyRequest().authenticated()</code> 설정으로
+            인증된 사용자만 접근할 수 있습니다.
+        </p>
+        <p>
+            로그아웃 후 <code>/mypage</code>에 직접 접근하면
+            자동으로 <code>/login</code>으로 리다이렉트됩니다.
+        </p>
+    </div>
+
+    <div class="nav">
+        <a href="/" class="btn">홈으로</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">로그아웃</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

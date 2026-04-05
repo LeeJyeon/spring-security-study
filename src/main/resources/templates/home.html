@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Security 핸즈온</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Spring Security 핸즈온</h1>
+
+    <!-- 비로그인 상태 -->
+    <div sec:authorize="!isAuthenticated()">
+        <p>환영합니다, Guest님!</p>
+        <div class="nav">
+            <a href="/login" class="btn">로그인</a>
+            <a href="/signup" class="btn btn-secondary">회원가입</a>
+        </div>
+    </div>
+
+    <!-- 로그인 상태 -->
+    <div sec:authorize="isAuthenticated()">
+        <p>환영합니다, <strong sec:authentication="name">username</strong>님!</p>
+        <p>권한: <strong sec:authentication="authorities">ROLE</strong></p>
+
+        <div class="nav">
+            <a href="/mypage" class="btn">마이페이지</a>
+
+            <!-- ADMIN만 보이는 버튼 -->
+            <a sec:authorize="hasRole('ADMIN')" href="/admin" class="btn btn-admin">관리자 페이지</a>
+
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">로그아웃</button>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+    <div class="info-box">
+        <h3>학습 안내</h3>
+        <ul>
+            <li><strong>/</strong> - 홈 (누구나 접근 가능)</li>
+            <li><strong>/login</strong> - 로그인 페이지</li>
+            <li><strong>/signup</strong> - 회원가입 페이지</li>
+            <li><strong>/mypage</strong> - 마이페이지 (로그인 필요)</li>
+            <li><strong>/admin</strong> - 관리자 페이지 (ADMIN 권한 필요)</li>
+            <li><strong>/h2-console</strong> - DB 콘솔 (개발용)</li>
+        </ul>
+        <p>테스트 계정: <code>user / 1234</code> (일반) | <code>admin / 1234</code> (관리자)</p>
+    </div>
+</div>
+</body>
+</html>

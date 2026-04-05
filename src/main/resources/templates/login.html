@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <h1>로그인</h1>
+
+    <!-- 에러 메시지 -->
+    <div th:if="${param.error}" class="alert alert-error">
+        사용자 이름 또는 비밀번호가 올바르지 않습니다.
+    </div>
+
+    <!-- 로그아웃 메시지 -->
+    <div th:if="${param.logout}" class="alert alert-success">
+        로그아웃되었습니다.
+    </div>
+
+    <!-- 회원가입 완료 메시지 -->
+    <div th:if="${param.registered}" class="alert alert-success">
+        회원가입이 완료되었습니다. 로그인해주세요!
+    </div>
+
+    <!--
+        ★ Spring Security 폼 로그인 핵심 포인트:
+        - action="/login" method="post" → SecurityConfig의 loginProcessingUrl과 일치
+        - name="username" / name="password" → Spring Security 기본 파라미터 이름
+        - CSRF 토큰은 Thymeleaf가 th:action 사용 시 자동 추가
+    -->
+    <form th:action="@{/login}" method="post" class="form">
+        <div class="form-group">
+            <label for="username">사용자 이름</label>
+            <input type="text" id="username" name="username"
+                   placeholder="username" autofocus required>
+        </div>
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password"
+                   placeholder="password" required>
+        </div>
+        <button type="submit" class="btn">로그인</button>
+    </form>
+
+    <p class="text-center">
+        계정이 없으신가요? <a href="/signup">회원가입</a>
+    </p>
+    <p class="text-center">
+        <a href="/">홈으로</a>
+    </p>
+</div>
+</body>
+</html>
