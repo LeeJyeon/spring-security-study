@@ -7,7 +7,7 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.stereotype.Service
 
 @Service
-class AccessDeniedHandler: AccessDeniedHandler{
+class CustomAccessDeniedHandler: AccessDeniedHandler{
     override fun handle(
         request: HttpServletRequest?,
         response: HttpServletResponse?,
