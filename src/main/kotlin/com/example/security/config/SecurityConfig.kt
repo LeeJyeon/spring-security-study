@@ -9,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import jakarta.servlet.http.HttpServletResponse
 
 /**
  * ===== Step 2 & 4: Spring Security 설정 =====
@@ -59,12 +60,29 @@ class SecurityConfig(
                 auth
                     // 로그인 API는 누구나 접근 가능 (토큰 발급 받는 곳)
                     .requestMatchers("/api/login").permitAll()
+                    // ADMIN 전용 API
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     // 그 외 API는 인증 필요 (JWT 토큰 필요)
                     .anyRequest().authenticated()
             }
             // JWT 필터를 폼 로그인 필터 앞에 배치
             // 요청: [JwtAuthenticationFilter] - [UsernamePasswordAuthenticationFilter] - ...
             .addFilterBefore(JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+            // API는 리다이렉트 대신 HTTP 상태 코드로 응답
+            .exceptionHandling { ex ->
+                // 인증 안 됨 (토큰 없음) -> 401
+                ex.authenticationEntryPoint { _, response, _ ->
+                    response.status = HttpServletResponse.SC_UNAUTHORIZED
+                    response.contentType = "application/json; charset=UTF-8"
+                    response.writer.write("""{"error": "인증이 필요합니다"}""")
+                }
+                // 권한 없음 -> 403
+                ex.accessDeniedHandler { _, response, _ ->
+                    response.status = HttpServletResponse.SC_FORBIDDEN
+                    response.contentType = "application/json; charset=UTF-8"
+                    response.writer.write("""{"error": "접근 권한이 없습니다"}""")
+                }
+            }
 
         return http.build()
     }

@@ -38,6 +38,22 @@
 
     <hr>
     <div class="info-box">
+        <h3>JWT API 테스트</h3>
+        <div class="nav" style="margin-bottom:12px;">
+            <button class="btn" onclick="jwtLogin()">JWT 로그인 (user)</button>
+            <button class="btn btn-admin" onclick="jwtLoginAdmin()">JWT 로그인 (admin)</button>
+            <button class="btn btn-secondary" onclick="jwtMe()">GET /api/me</button>
+            <button class="btn btn-secondary" onclick="jwtHello()">GET /api/hello</button>
+            <button class="btn btn-danger" onclick="jwtAdminStats()">GET /api/admin/stats (ADMIN)</button>
+        </div>
+        <div id="jwt-result" class="card" style="display:none;">
+            <strong>응답:</strong>
+            <pre id="jwt-response" style="margin-top:8px;white-space:pre-wrap;"></pre>
+        </div>
+    </div>
+
+    <hr>
+    <div class="info-box">
         <h3>학습 안내</h3>
         <ul>
             <li><strong>/</strong> - 홈 (누구나 접근 가능)</li>
@@ -46,9 +62,79 @@
             <li><strong>/mypage</strong> - 마이페이지 (로그인 필요)</li>
             <li><strong>/admin</strong> - 관리자 페이지 (ADMIN 권한 필요)</li>
             <li><strong>/h2-console</strong> - DB 콘솔 (개발용)</li>
+            <li><strong>POST /api/login</strong> - JWT 토큰 발급</li>
+            <li><strong>GET /api/me</strong> - 내 정보 (JWT 필요)</li>
+            <li><strong>GET /api/hello</strong> - 인사 (JWT 필요)</li>
         </ul>
         <p>테스트 계정: <code>user / 1234</code> (일반) | <code>admin / 1234</code> (관리자)</p>
     </div>
 </div>
+
+<script>
+    let jwtToken = null;
+
+    function showResult(data) {
+        document.getElementById('jwt-result').style.display = 'block';
+        document.getElementById('jwt-response').textContent = JSON.stringify(data, null, 2);
+    }
+
+    function jwtLogin() {
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: 'user', password: '1234'})
+        })
+        .then(r => r.json())
+        .then(data => {
+            jwtToken = data.token;
+            showResult({status: 'JWT 발급 성공 (user)', token: jwtToken});
+        })
+        .catch(e => showResult({error: e.message}));
+    }
+
+    function jwtLoginAdmin() {
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username: 'admin', password: '1234'})
+        })
+        .then(r => r.json())
+        .then(data => {
+            jwtToken = data.token;
+            showResult({status: 'JWT 발급 성공 (admin)', token: jwtToken});
+        })
+        .catch(e => showResult({error: e.message}));
+    }
+
+    function jwtMe() {
+        fetch('/api/me', {
+            headers: {'Authorization': 'Bearer ' + jwtToken}
+        })
+        .then(r => r.json())
+        .then(data => showResult(data))
+        .catch(e => showResult({error: e.message}));
+    }
+
+    function jwtHello() {
+        fetch('/api/hello', {
+            headers: {'Authorization': 'Bearer ' + jwtToken}
+        })
+        .then(r => r.json())
+        .then(data => showResult(data))
+        .catch(e => showResult({error: e.message}));
+    }
+
+    function jwtAdminStats() {
+        fetch('/api/admin/stats', {
+            headers: {'Authorization': 'Bearer ' + jwtToken}
+        })
+        .then(r => {
+            if (r.status === 403) return {error: '403 Forbidden - ADMIN 권한이 필요합니다'};
+            return r.json();
+        })
+        .then(data => showResult(data))
+        .catch(e => showResult({error: e.message}));
+    }
+</script>
 </body>
 </html>
