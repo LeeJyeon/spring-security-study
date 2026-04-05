@@ -30,6 +30,8 @@ class UserService(
             throw IllegalArgumentException("이미 존재하는 사용자 이름입니다: ${request.username}")
         }
 
+        request.isPasswordConfirmed()
+
         val user = User(
             username = request.username,
             password = passwordEncoder.encode(request.password), // ★ 비밀번호 암호화!

@@ -20,7 +20,17 @@ data class SignupRequest(
     @field:Size(min = 4, max = 100, message = "비밀번호는 4자 이상이어야 합니다")
     val password: String = "",
 
+    @field:NotBlank(message = "비밀번호를 다시 입력하세요")
+    @field:Size(min = 4, max = 100, message = "비밀번호는 4자 이상이어야 합니다")
+    val confirmPassword: String = "",
+
     @field:NotBlank(message = "이메일을 입력하세요")
     @field:Email(message = "올바른 이메일 형식이 아닙니다")
     val email: String = ""
-)
+){
+    fun isPasswordConfirmed() {
+        if (password != confirmPassword) {
+            throw IllegalArgumentException("비밀번호가 일치하지 않습니다")
+        }
+    }
+}
