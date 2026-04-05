@@ -30,6 +30,14 @@
         </div>
 
         <div class="form-group">
+            <label for="confirmPassword">비밀번호 재입력</label>
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                   placeholder="4자 이상" required>
+            <span class="error" th:if="${#fields.hasErrors('confirmPassword')}"
+                  th:errors="*{confirmPassword}"></span>
+        </div>
+
+        <div class="form-group">
             <label for="email">이메일</label>
             <input type="email" id="email" th:field="*{email}"
                    placeholder="example@email.com" required>
